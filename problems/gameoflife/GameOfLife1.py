@@ -5,9 +5,9 @@ Created on Nov 17, 2014
 '''
 import itertools
 from collections import namedtuple
-import operator
-import functools
 from collections import Counter
+import time
+
 
 Cell = namedtuple('Cell', 'x y')    
 
@@ -21,7 +21,21 @@ def filter_cells(cell_count_pairs,cells_to_filter,filterFunc):
                                     if filterFunc(n_l[1])}
     return new_cells
     
-    
+def timeit(f):
+
+    def timed(*args, **kw):
+
+        ts = time.time()
+        result = f(*args, **kw)
+        te = time.time()
+
+        print('func:%r args:[%r, %r] took: %2.9f sec' % \
+          (f.__name__, args, kw, te-ts))
+        return result
+
+    return timed 
+
+@timeit    
 def next_generation(live_cells):
     neighborsSeq = flatMap(live_cells, neighbors_xy)
     neighbors = frozenset(neighborsSeq)
@@ -53,24 +67,21 @@ def neighbors_xy(cell):
     bottom_row_xy = frozenset([Cell(x,y) for (x,y) in bottom_row])
     
     return top_row_xy.union(bottom_row_xy).union(frozenset([left,right ]))
-   
-def live_neighbors(live_cell,live_cells):
-    return [neighbor for neighbor in neighbors_xy(live_cell) if neighbor in live_cells]
     
-    
-def conway_live_rules(live_neighbors_size):
-    pass
 
 
-def println(mySeq):
-    for l in mySeq:
-        print(l)
-        
+       
 # mapFunc: Any => Seq[Any]
 def flatMap(seqR,mapFunc):
     seqOfSeqs = [mapFunc(x) for x in seqR]
     return [r for y in seqOfSeqs for r in y]
+
+def cells(tups):
+    return frozenset({ Cell(x,y) for x,y in tups})
     
 if __name__ == '__main__':
+    aBlock = cells([(10,10),(11,10),(11,11),(10,11)])
+    next_generation(aBlock) 
+#     //Bee
     pass
     
